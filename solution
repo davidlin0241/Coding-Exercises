@@ -1,0 +1,35 @@
+class Main {
+  public static void main(String[] args) {
+    System.out.println(encryption("haveaniceday"));
+    System.out.println(encryption("feedthedog"));
+    System.out.println(encryption("chillout"));
+    System.out.println(encryption("if man was meant to stay on the ground god would have given us roots"));
+  }
+
+  public static String encryption(String s) {
+    String sNoSpace = s.replaceAll(" ", ""); 
+    int strLen = sNoSpace.length(); 
+    double strLenRoot = Math.sqrt(strLen); 
+    double rows = Math.floor(strLenRoot);
+    double cols = Math.ceil(strLenRoot); 
+    String newString = ""; 
+    int iters = 0, colIndex = 0, startingColIndex = 1; 
+
+    if ( rows * cols < strLen ) 
+      rows += 1; 
+    
+    while (iters < strLen) {
+      newString += sNoSpace.charAt(colIndex); 
+      colIndex += cols; 
+
+      if (colIndex >= strLen) {
+        newString += " ";
+        colIndex = startingColIndex++; 
+      }
+      
+      iters++;  
+    }
+
+    return newString; 
+  }
+}
