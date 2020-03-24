@@ -1,0 +1,77 @@
+#Edge cases I thought about. I didn't implement checks because that seemed to be out of scope.:
+#no servers
+#server of size 0 
+#Duplicate server names (duplicate key with different value would still overwrite original pair)
+
+#BF approach: for each value of each server, put it into a list. e.g. A:3, B:1 makes [A, A, A, B] 
+#Then just use random number library to generate an index to return. 
+#Runtime: N == len(args), Space: sum(size) for all sizes of the servers 
+
+#More optimized: A:3, B:1 -> generate random number between 0-3. If within first 3, return A. Otherwise, return B. 
+#A:2, B:1, C:3 
+#A, A, B, C, C, C -> [range(0,2), range(2,3), range(3,6)]. range is exclusive of right argument   
+#Can use modified binary search to find right index. 
+#Similar to brute force approach except we keep track of the range at each index instead 
+#Runtime and space: N == len(args). 
+
+import random 
+
+#serverPairs contains server_name:size tuple pairs 
+def getRandomServer(serverPairs):
+    servers = []
+    startIndex = 0
+    endIndex = 0 #exclusive  
+    
+    for pair in serverPairs:
+        endIndex += pair[1] #index 1 is size  
+        servers.append(range(startIndex, endIndex))
+        startIndex = endIndex 
+    
+    randomNum = random.randint(0, endIndex-1) #endIndex-1 is inclusive 
+    #print(randomNum) 
+    serverIndex = binarySearch(servers, randomNum)
+
+    return serverPairs[serverIndex][0] #returns the server name 
+    
+def binarySearch(servers, randomNum):
+    lo = 0
+    hi = len(servers) - 1
+    while lo <= hi:
+        mid = (lo+hi)//2
+        if randomNum in servers[mid]:
+            return mid 
+        elif randomNum < servers[mid][-1]: #range(a,b) returns a list. [-1] gets the last ele of list
+            hi = mid - 1
+        elif randomNum > servers[mid][-1]:
+            lo = mid + 1
+    #Program flow should never reach here. 
+    print('Binary search error')
+
+def getPercentages(*serverSizes):
+    for _ in range(100):
+        server = getRandomServer(serverSizes)
+        percentages[server] += 1
+        
+    for server in percentages:
+        percentages[server] /= 100 
+        
+    print(sorted(percentages.items())) #Sorting the dictionary for consistent output viewing 
+  
+# Test cases 
+percentages = {'X':0, 'Y':0, 'Z':0}
+getPercentages(('X',1), ('Y', 2), ('Z', 1))  
+
+percentages = {'X':0, 'Y':0} 
+getPercentages(('X',1), ('Y', 0))  
+
+percentages = {'X':0, 'Y':0}
+getPercentages(('X',3), ('Y', 1))  
+
+percentages = {'A':0, 'B':0, 'C':0, 'D':0, 'E':0}
+getPercentages(('A',3), ('B',2), ('C',4), ('D',4), ('E',1))
+
+percentages = {'X':0, 'Y':0, 'Z':0}
+getPercentages(('X',3), ('Y', 1), ('Z', 3))  
+    
+
+
